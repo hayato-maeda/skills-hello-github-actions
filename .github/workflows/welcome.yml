@@ -19,7 +19,9 @@ jobs:
 
       - name: Run cloc
         id: run-cloc
-        run: cloc ./ --by-file
+        run: |
+          OUTPUT=$(cloc ./ --by-file)
+          echo "::set-output name=cloc::${OUTPUT}"
 
       - name: cloc results
         uses: actions/github-script@v6
