@@ -20,7 +20,7 @@ jobs:
       - name: Run cloc
         id: run-cloc
         run: |
-          cloc ./ --by-file > cloc_output.txt
+          cloc ./ --by-file --csv > cloc_output.csv
 
       - name: cloc results
         uses: actions/github-script@v6
@@ -29,7 +29,7 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            const output = fs.readFileSync('cloc_output.txt', 'utf8');
+            const output = fs.readFileSync('cloc_output.csv', 'utf8');
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
