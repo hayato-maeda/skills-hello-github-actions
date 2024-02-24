@@ -19,7 +19,7 @@ jobs:
 
       - name: Run cloc
         id: run-cloc
-        run: cloc ./ --by-file >> "$GITHUB_OUTPUT"
+        run: cloc ./ --by-file
 
       - name: cloc results
         uses: actions/github-script@v6
