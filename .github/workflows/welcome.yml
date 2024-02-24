@@ -29,14 +29,29 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            const output = fs.readFileSync('cloc_output.txt', 'utf8');
-            const output2 = `\`\`\`\n${output}\n\`\`\``;
-            github.rest.issues.createComment({
+            const txt = fs.readFileSync('cloc_output.txt', 'utf8');
+            const output = `\`\`\`\n${txt}\n\`\`\``;
+            const comments = await github.rest.issues.listComments({
               issue_number: context.issue.number,
               owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: output2
-            })
+              repo: context.repo.repo
+            });
+            const botComment = comments.data.find(comment => comment.user.login === 'github-actions[bot]');
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                comment_id: botComment.id,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: output
+              });
+            } else {
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: output
+              });
+            }
 
       - name: Cleanup
         run: rm cloc_output.txt
