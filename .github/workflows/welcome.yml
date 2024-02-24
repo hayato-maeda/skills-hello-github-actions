@@ -24,7 +24,7 @@ jobs:
         id: run-cloc
         run: |
           git fetch origin main
-          cloc --ignore-whitespace --git --diff --by-file origin/main HEAD | tail -n +5 > cloc_output.txt
+          cloc --version > cloc_output.txt
 
       - name: cloc results
         uses: actions/github-script@v6
