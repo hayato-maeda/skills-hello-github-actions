@@ -14,15 +14,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        with:
-          ref: main
+
       - name: Install cloc
         run: sudo apt install cloc
 
       - name: Run cloc
         id: run-cloc
         run: |
-          cloc --git --diff --by-file main HEAD | tail -n +5 > cloc_output.txt
+          git fetch origin main
+          cloc --git --diff --by-file origin/main HEAD | tail -n +5 > cloc_output.txt
 
       - name: cloc results
         uses: actions/github-script@v6
