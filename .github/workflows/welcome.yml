@@ -1,7 +1,7 @@
 name: cloc
 
 on:
-  pull_request_target:
+  pull_request:
     types:
       - opened
       - synchronize
@@ -12,6 +12,8 @@ permissions:
 jobs:
   cloc:
     runs-on: ubuntu-latest
+    outputs:
+      cloc: ${{ steps.run-cloc.outputs.cloc }}
     steps:
       - uses: actions/checkout@v3
       - name: Install cloc
@@ -19,26 +21,20 @@ jobs:
 
       - name: Run cloc
         id: run-cloc
-        run: cloc ./ --by-file
+        run: |
+          OUTPUT=$(cloc ./ --by-file)
+          echo "::set-output name=cloc::${OUTPUT}"
 
-        - name: cloc results
+      - name: cloc results
         uses: actions/github-script@v6
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           script: |
-            github.issues.createComment({
+            const output = `${{ steps.run-cloc.outputs.cloc }}`;
+            github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '${{ steps.run-cloc.outputs }}'
+              body: output
             })
-# jobs:
-#   build:
-#     name: Post welcome comment
-#     runs-on: ubuntu-latest
-#     steps:
-#       - run: gh pr comment $PR_URL --body "Welcome to the repository!"
-#         env:
-#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#           PR_URL: ${{ github.event.pull_request.html_url }}
