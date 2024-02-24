@@ -30,7 +30,7 @@ jobs:
           script: |
             const fs = require('fs');
             const output = fs.readFileSync('cloc_output.txt', 'utf8');
-            const output2 = ```${output}```;
+            const output2 = `\`\`\`\n${output}\n\`\`\``;
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
