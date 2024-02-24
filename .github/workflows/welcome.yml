@@ -1,7 +1,7 @@
 name: cloc
 
 on:
-  pull_request_target:
+  pull_request:
     types:
       - opened
       - synchronize
@@ -21,18 +21,19 @@ jobs:
         id: run-cloc
         run: cloc ./ --by-file
 
-        - name: cloc results
+      - name: cloc results
         uses: actions/github-script@v6
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           script: |
-            github.issues.createComment({
+            github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: '${{ steps.run-cloc.outputs }}'
             })
+
 # jobs:
 #   build:
 #     name: Post welcome comment
