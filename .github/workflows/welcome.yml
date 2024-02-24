@@ -20,7 +20,7 @@ jobs:
       - name: Run cloc
         id: run-cloc
         run: |
-          cloc ./ --by-file > cloc_output.txt
+          cloc ./ --by-file | tail -n +6 > cloc_output.txt
 
       - name: cloc results
         uses: actions/github-script@v6
