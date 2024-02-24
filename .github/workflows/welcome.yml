@@ -1,6 +1,9 @@
 name: cloc
 
 on:
+  workflow_dispatch:
+  schedule:
+    - cron: "* * * * *"
   pull_request:
     types:
       - opened
@@ -23,7 +26,7 @@ jobs:
         id: run-cloc
         run: |
           git fetch origin main
-          cloc --ignore-whitespace --git --diff --by-file origin/main HEAD | tail -n +5 > cloc_output.txt
+          cloc --ignore-whitespace --git --diff --by-file --exclude-dir=node_modules,dotnet,.github --not-match-f=^.+\.spec\.ts$ origin/main HEAD | tail -n +5 > cloc_output.txt
 
       - name: cloc results
         uses: actions/github-script@v6
@@ -33,12 +36,13 @@ jobs:
           script: |
             const fs = require('fs');
             const txt = fs.readFileSync('cloc_output.txt', 'utf8');
-            const output = `\`\`\`\n${txt}\n\`\`\``;
+            const output = `<details>\n<summary>Code Count!</summary>\n\n\`\`\`\n${txt}\n\`\`\`\n</details>`;
             const comments = await github.rest.issues.listComments({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo
             });
+
             const botComment = comments.data.find(comment => comment.user.login === 'github-actions[bot]');
             if (botComment) {
               await github.rest.issues.updateComment({
