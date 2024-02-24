@@ -17,8 +17,9 @@ jobs:
 
       - name: Install cloc
         run: |
-          sudo apt update
-          sudo apt install cloc
+         wget https://github.com/AlDanial/cloc/releases/download/2.00/cloc-2.00.pl
+          chmod +x cloc-2.00.pl
+          sudo mv cloc-2.00.pl /usr/local/bin/cloc
 
       - name: Run cloc
         id: run-cloc
