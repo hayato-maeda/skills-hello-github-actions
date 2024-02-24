@@ -21,7 +21,6 @@ jobs:
         id: run-cloc
         run: |
           cloc ./ --by-file > cloc_output.txt
-          echo "CLOC_OUTPUT=$(cat cloc_output.txt)" >> $GITHUB_ENV
 
       - name: cloc results
         uses: actions/github-script@v6
@@ -29,7 +28,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           script: |
-            const output = process.env.CLOC_OUTPUT;
+            const fs = require('fs');
+            const output = fs.readFileSync('cloc_output.txt', 'utf8');
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
