@@ -16,12 +16,14 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Install cloc
-        run: sudo apt install cloc
+        run: |
+          sudo apt update
+          sudo apt install cloc
 
       - name: Run cloc
         id: run-cloc
         run: |
-          git fetch origin main:main
+          git fetch origin main
           cloc --ignore-whitespace --git --diff --by-file origin/main HEAD | tail -n +5 > cloc_output.txt
 
       - name: cloc results
