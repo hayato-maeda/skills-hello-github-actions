@@ -12,8 +12,6 @@ permissions:
 jobs:
   cloc:
     runs-on: ubuntu-latest
-    outputs:
-      cloc: ${{ steps.run-cloc.outputs.cloc }}
     steps:
       - uses: actions/checkout@v3
       - name: Install cloc
@@ -22,8 +20,8 @@ jobs:
       - name: Run cloc
         id: run-cloc
         run: |
-          OUTPUT=$(cloc ./ --by-file)
-          echo "::set-output name=cloc::${OUTPUT}"
+          cloc ./ --by-file > cloc_output.txt
+          echo "CLOC_OUTPUT=$(cat cloc_output.txt)" >> $GITHUB_ENV
 
       - name: cloc results
         uses: actions/github-script@v6
@@ -31,7 +29,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           script: |
-            const output = `${{ steps.run-cloc.outputs.cloc }}`;
+            const output = process.env.CLOC_OUTPUT;
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
