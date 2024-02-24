@@ -17,15 +17,13 @@ jobs:
 
       - name: Install cloc
         run: |
-         wget https://github.com/AlDanial/cloc/releases/download/2.00/cloc-2.00.pl
-          chmod +x cloc-2.00.pl
-          sudo mv cloc-2.00.pl /usr/local/bin/cloc
+          sudo apt install cloc
 
       - name: Run cloc
         id: run-cloc
         run: |
           git fetch origin main
-          cloc --version > cloc_output.txt
+          cloc --ignore-whitespace --git --diff --by-file origin/main HEAD | tail -n +5 > cloc_output.txt
 
       - name: cloc results
         uses: actions/github-script@v6
