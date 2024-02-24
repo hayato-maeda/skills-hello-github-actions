@@ -19,7 +19,7 @@ jobs:
 
       - name: Run cloc
         id: run-cloc
-        run: cloc ./ --by-file
+        run: cloc ./ --by-file >> "$GITHUB_OUTPUT"
 
       - name: cloc results
         uses: actions/github-script@v6
@@ -27,7 +27,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           script: |
-            console.log(steps.run-cloc.outputs);
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
