@@ -1,7 +1,7 @@
 name: cloc
 
 on:
-  pull_request_target:
+  pull_request:
     types:
       - opened
       - synchronize
@@ -19,26 +19,26 @@ jobs:
 
       - name: Run cloc
         id: run-cloc
-        run: cloc ./ --by-file
+        run: |
+          cloc ./ --by-file --csv > cloc_output.csv
 
-        - name: cloc results
+      - name: cloc results
         uses: actions/github-script@v6
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           script: |
-            github.issues.createComment({
+            const fs = require('fs');
+            const csv = fs.readFileSync('cloc_output.csv', 'utf8');
+            const lines = csv.split('\n');
+            const headers = lines[0].split(',');
+            const rows = lines.slice(1).map(line => line.split(','));
+            let markdown = headers.join(' | ');
+            markdown += '\n' + headers.map(() => '---').join(' | ') + '\n';
+            markdown += rows.map(row => row.join(' | ')).join('\n');
+            github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '${{ steps.run-cloc.outputs }}'
+              body: output
             })
-# jobs:
-#   build:
-#     name: Post welcome comment
-#     runs-on: ubuntu-latest
-#     steps:
-#       - run: gh pr comment $PR_URL --body "Welcome to the repository!"
-#         env:
-#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#           PR_URL: ${{ github.event.pull_request.html_url }}
